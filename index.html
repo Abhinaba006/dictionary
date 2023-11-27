@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Definitions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Word Definitions</h1>
+    <label for="wordInput">Enter a word:</label>
+    <input type="text" id="wordInput" placeholder="Type a word...">
+    <button onclick="getDefinition()">Get Definition</button>
+    <div id="output"></div>
+
+    <script>
+
+        function getDefinition() {
+            const wordInput = document.getElementById('wordInput');
+            const outputDiv = document.getElementById('output');
+            const word = wordInput.value.trim();
+
+            if (word === "") {
+                outputDiv.innerHTML = "<p>Please enter a word.</p>";
+                return;
+            }
+
+            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en_US/${word}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const definition = data[0].meanings[0].definitions[0].definition;
+                    outputDiv.innerHTML += `<p><strong>${word}:</strong> ${definition}</p>`;
+                })
+                .catch(error => {
+                    outputDiv.innerHTML = `<p>Error fetching definition for '${word}': ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+
+</html>
